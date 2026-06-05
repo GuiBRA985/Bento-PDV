@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pantanal Selvagem — Ecoturismo no Pantanal Mato-Grossense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde-escuro: #1a3a2e;
+    --verde-medio: #2d5c45;
+    --verde-claro: #4a8c6a;
+    --dourado: #c8922a;
+    --dourado-claro: #e6b054;
+    --creme: #f5f0e8;
+    --creme-escuro: #ede5d5;
+    --terra: #8b5a2b;
+    --texto: #1a1a16;
+    --texto-suave: #4a4a3e;
+    --branco: #fdfcf9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--branco);
+    color: var(--texto);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3rem;
+    transition: background 0.4s, box-shadow 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(26, 58, 46, 0.97);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.18);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--creme);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--dourado-claro); }
+  .nav-links { display: flex; gap: 2.2rem; align-items: center; }
+  .nav-links a {
+    color: rgba(245, 240, 232, 0.85);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--dourado-claro); }
+  .nav-cta {
+    background: var(--dourado);
+    color: var(--branco) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 2px;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--dourado-claro) !important; color: var(--verde-escuro) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(10,28,20,0.3) 0%, rgba(10,28,20,0.15) 40%, rgba(10,28,20,0.75) 100%),
+      url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1600&q=80') center/cover no-repeat;
+    transform: scale(1.04);
+    animation: slowzoom 20s ease-in-out infinite alternate;
+  }
+  @keyframes slowzoom {
+    from { transform: scale(1.04); }
+    to { transform: scale(1.12); }
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 3rem 6rem;
+    max-width: 780px;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dourado-claro);
+    margin-bottom: 1.2rem;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 1.08;
+    color: var(--creme);
+    margin-bottom: 1.4rem;
+  }
+  .hero-title em { font-style: italic; color: var(--dourado-claro); }
+  .hero-sub {
+    font-size: 1.08rem;
+    color: rgba(245, 240, 232, 0.8);
+    font-weight: 300;
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 2.4rem;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--dourado);
+    color: var(--branco);
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--dourado-claro); transform: translateY(-1px); }
+  .btn-ghost {
+    border: 1px solid rgba(245,240,232,0.5);
+    color: var(--creme);
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    border-radius: 2px;
+    transition: border-color 0.2s, background 0.2s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--dourado-claro); background: rgba(200,146,42,0.12); }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem; right: 3rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(245,240,232,0.55);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(245,240,232,0.55), transparent);
+    animation: scrolldown 1.6s ease-in-out infinite;
+  }
+  @keyframes scrolldown { 0%,100%{transform:scaleY(1);opacity:1} 50%{transform:scaleY(0.5);opacity:0.4} }
+
+  /* STATEMENT */
+  .statement {
+    background: var(--verde-escuro);
+    padding: 5rem 3rem;
+    text-align: center;
+  }
+  .statement p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    color: var(--creme);
+    max-width: 820px;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .statement p em { color: var(--dourado-claro); font-style: italic; }
+
+  /* STATS */
+  .stats {
+    background: var(--creme-escuro);
+    padding: 3.5rem 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 1.5rem 4rem;
+    text-align: center;
+    border-right: 1px solid rgba(26,58,46,0.15);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    color: var(--verde-escuro);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .stat-label {
+    font-size: 0.82rem;
+    color: var(--texto-suave);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  .section-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado);
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    color: var(--verde-escuro);
+    line-height: 1.15;
+  }
+  .section-title em { color: var(--dourado); font-style: italic; }
+
+  /* PACOTES */
+  .pacotes { padding: 6rem 3rem; background: var(--branco); }
+  .pacotes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .card {
+    background: var(--branco);
+    border: 1px solid rgba(26,58,46,0.12);
+    border-radius: 3px;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(26,58,46,0.14); }
+  .card-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    background: var(--verde-claro);
+  }
+  .card-img-placeholder {
+    width: 100%; height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+  }
+  .card-body { padding: 1.5rem; }
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dourado);
+    margin-bottom: 0.6rem;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: var(--verde-escuro);
+    margin-bottom: 0.7rem;
+    line-height: 1.2;
+  }
+  .card-desc {
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    line-height: 1.65;
+    margin-bottom: 1.2rem;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(26,58,46,0.1);
+  }
+  .card-price { font-size: 0.82rem; color: var(--texto-suave); }
+  .card-price strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--verde-escuro);
+    font-weight: 700;
+  }
+  .card-dias {
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .btn-sm {
+    background: var(--verde-escuro);
+    color: var(--creme);
+    text-decoration: none;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.82rem;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .btn-sm:hover { background: var(--verde-medio); }
+
+  /* WILDLIFE */
+  .wildlife {
+    background: var(--verde-escuro);
+    padding: 6rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .wildlife::before {
+    content: '';
+    position: absolute;
+    right: -120px; top: -80px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: rgba(74,140,106,0.08);
+  }
+  .wildlife .section-title { color: var(--creme); }
+  .wildlife .section-eyebrow { color: var(--dourado-claro); }
+  .wildlife-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.2rem;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .animal-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245,240,232,0.12);
+    border-radius: 3px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .animal-card:hover { background: rgba(255,255,255,0.1); border-color: rgba(200,146,42,0.4); }
+  .animal-emoji { font-size: 2.2rem; display: block; margin-bottom: 0.6rem; }
+  .animal-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--creme);
+    font-style: italic;
+  }
+  .animal-sub {
+    font-size: 0.72rem;
+    color: rgba(245,240,232,0.5);
+    margin-top: 0.2rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* EXPERIENCIA */
+  .experiencia {
+    padding: 6rem 3rem;
+    background: var(--creme);
+  }
+  .exp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .exp-big {
+    grid-row: span 2;
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    align-items: flex-end;
+    background: linear-gradient(to bottom, var(--verde-claro), var(--verde-escuro));
+  }
+  .exp-item {
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+    min-height: 200px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .exp-bg {
+    position: absolute; inset: 0;
+    object-fit: cover;
+    width: 100%; height: 100%;
+    display: block;
+  }
+  .exp-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(10,28,20,0.85) 100%);
+  }
+  .exp-label {
+    position: relative;
+    padding: 1.5rem;
+    z-index: 1;
+  }
+  .exp-label h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--creme);
+    font-size: 1.15rem;
+    margin-bottom: 0.3rem;
+  }
+  .exp-label p { font-size: 0.82rem; color: rgba(245,240,232,0.7); }
+
+  /* TESTEMUNHOS */
+  .testemunhos {
+    padding: 6rem 3rem;
+    background: var(--branco);
+  }
+  .depoimentos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .depoimento {
+    padding: 2rem;
+    border-left: 3px solid var(--dourado);
+    background: var(--creme);
+  }
+  .depoimento-texto {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--verde-escuro);
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+  .depoimento-autor { font-size: 0.82rem; color: var(--texto-suave); font-weight: 500; }
+  .depoimento-local { font-size: 0.78rem; color: var(--dourado); letter-spacing: 0.06em; }
+
+  /* CONSERVACAO */
+  .conservacao {
+    background: var(--creme-escuro);
+    padding: 6rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .conservacao-text .section-header { text-align: left; margin-bottom: 1.5rem; }
+  .conservacao-text p {
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+  .conservacao-nums {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  .cons-num {
+    background: var(--verde-escuro);
+    padding: 1.5rem;
+    border-radius: 3px;
+  }
+  .cons-num .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--dourado-claro);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .cons-num .label { font-size: 0.8rem; color: rgba(245,240,232,0.7); line-height: 1.4; }
+
+  /* NEWSLETTER */
+  .newsletter {
+    background: var(--verde-escuro);
+    padding: 5rem 3rem;
+    text-align: center;
+  }
+  .newsletter h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--creme);
+    margin-bottom: 0.8rem;
+  }
+  .newsletter p { color: rgba(245,240,232,0.7); margin-bottom: 2rem; font-size: 0.95rem; }
+  .newsletter-form { display: flex; gap: 0; max-width: 480px; margin: 0 auto; }
+  .newsletter-form input {
+    flex: 1;
+    padding: 0.9rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    border: 1px solid rgba(245,240,232,0.2);
+    background: rgba(255,255,255,0.08);
+    color: var(--creme);
+    border-radius: 2px 0 0 2px;
+    outline: none;
+  }
+  .newsletter-form input::placeholder { color: rgba(245,240,232,0.4); }
+  .newsletter-form button {
+    padding: 0.9rem 1.6rem;
+    background: var(--dourado);
+    color: var(--branco);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 0 2px 2px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .newsletter-form button:hover { background: var(--dourado-claro); }
+
+  /* FOOTER */
+  footer {
+    background: #0e1f18;
+    padding: 4rem 3rem 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(245,240,232,0.1);
+  }
+  .footer-brand .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--creme);
+    display: block;
+    margin-bottom: 1rem;
+  }
+  .footer-brand .logo span { color: var(--dourado-claro); }
+  .footer-brand p { font-size: 0.85rem; color: rgba(245,240,232,0.55); line-height: 1.7; }
+  .footer-col h4 {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dourado-claro);
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 0.88rem;
+    color: rgba(245,240,232,0.6);
+    text-decoration: none;
+    margin-bottom: 0.6rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--creme); }
+  .footer-bottom {
+    max-width: 1180px;
+    margin: 2rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: rgba(245,240,232,0.35);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero-content { padding: 0 1.5rem 4rem; }
+    .statement, .pacotes, .wildlife, .experiencia, .testemunhos, .newsletter { padding: 4rem 1.5rem; }
+    .stats { padding: 2.5rem 1rem; }
+    .stat-item { padding: 1rem 2rem; border-right: none; border-bottom: 1px solid rgba(26,58,46,0.15); }
+    .stat-item:last-child { border-bottom: none; }
+    .conservacao { grid-template-columns: 1fr; gap: 2.5rem; padding: 4rem 1.5rem; }
+    .exp-grid { grid-template-columns: 1fr; }
+    .exp-big { grid-row: auto; min-height: 280px; }
+    footer { padding: 3rem 1.5rem 2rem; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Pantanal <span>Selvagem</span></a>
+  <div class="nav-links">
+    <a href="#pacotes">Pacotes</a>
+    <a href="#vida-selvagem">Fauna</a>
+    <a href="#experiencias">Experiências</a>
+    <a href="#conservacao">Conservação</a>
+    <a href="#contato" class="nav-cta">Consultar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Ecoturismo · Pantanal Mato-Grossense</span>
+    <h1 class="hero-title">A maior planície<br>alagável do <em>mundo</em><br>te aguarda.</h1>
+    <p class="hero-sub">Expedições exclusivas de pequenos grupos ao coração do Pantanal. Encontros inesquecíveis com onças-pintadas, ariranhas e tuiuiús — guiados por naturalistas apaixonados.</p>
+    <div class="hero-actions">
+      <a href="#pacotes" class="btn-primary">Ver Expedições</a>
+      <a href="#conservacao" class="btn-ghost">Nossa Missão</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Explorar</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATEMENT -->
+<section class="statement">
+  <p>No Pantanal, a natureza não é pano de fundo — ela é a <em>protagonista</em>. Cada expedição é uma imersão profunda em um dos ecossistemas mais ricos e ameaçados do planeta.</p>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat-item">
+    <div class="stat-number">15+</div>
+    <div class="stat-label">Anos de experiência</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">3.200</div>
+    <div class="stat-label">Espécies de fauna</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">850+</div>
+    <div class="stat-label">Viajantes realizados</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">12</div>
+    <div class="stat-label">Guias naturalistas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">98%</div>
+    <div class="stat-label">Satisfação</div>
+  </div>
+</section>
+
+<!-- PACOTES -->
+<section class="pacotes" id="pacotes">
+  <div class="section-header">
+    <span class="section-eyebrow">Nossas expedições</span>
+    <h2 class="section-title">Pacotes para <em>todas</em><br>as aventuras</h2>
+  </div>
+  <div class="pacotes-grid">
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #1a3a2e, #4a8c6a);">🐆</div>
+      <div class="card-body">
+        <span class="card-tag">⭐ Mais popular</span>
+        <h3 class="card-title">Trilha das Onças</h3>
+        <p class="card-desc">Expedição fotográfica especializada em felinos. Percursos em voadeiras pelo Rio Cuiabá, madrugadas de observação e guia especializado em onças-pintadas.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 4.800</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 5 dias / 4 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #2d5c45, #8b5a2b);">🦜</div>
+      <div class="card-body">
+        <span class="card-tag">Observação de aves</span>
+        <h3 class="card-title">Passarinhada no Pantanal</h3>
+        <p class="card-desc">Para os birders de plantão: mais de 650 espécies registradas na região. Saídas ao amanhecer com binóculos e guias ornitólogos. Inclui fazenda com torre de observação.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 3.500</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 4 dias / 3 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #4a8c6a, #1a3a2e);">🌿</div>
+      <div class="card-body">
+        <span class="card-tag">Família & Iniciantes</span>
+        <h3 class="card-title">Primeiros Passos no Pantanal</h3>
+        <p class="card-desc">O pacote ideal para quem descobre o Pantanal pela primeira vez ou viaja com crianças. Atividades acessíveis, alojamento confortável e guia educativo.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 2.200</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 3 dias / 2 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #8b5a2b, #c8922a);">🌊</div>
+      <div class="card-body">
+        <span class="card-tag">Aventura aquática</span>
+        <h3 class="card-title">Rios & Corixos</h3>
+        <p class="card-desc">Expedição fluvial por canais e corixos secretos do Pantanal Norte. Canoa transparente, mergulho com snorkel em águas cristalinas e avistamento de ariranhas.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 3.900</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 4 dias / 3 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #1a3a2e, #c8922a);">📷</div>
+      <div class="card-body">
+        <span class="card-tag">Fotografia</span>
+        <h3 class="card-title">Expedição Fotográfica</h3>
+        <p class="card-desc">Para fotógrafos amadores e profissionais. Grupos mínimos (máx. 6 pessoas), veículos especialmente adaptados e guia que também é fotógrafo de vida selvagem.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 6.200</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 7 dias / 6 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img-placeholder" style="background: linear-gradient(135deg, #4a8c6a, #2d5c45);">🌙</div>
+      <div class="card-body">
+        <span class="card-tag">Premium · Exclusivo</span>
+        <h3 class="card-title">Grande Travessia do Pantanal</h3>
+        <p class="card-desc">A expedição definitiva: 10 dias cruzando diferentes biomas pantaneiros, do Pantanal Norte ao Sul. Alojamentos premium, barco privativo e guia residente exclusivo.</p>
+        <div class="card-footer">
+          <div class="card-price">
+            <span>A partir de</span>
+            <strong>R$ 12.500</strong>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem">
+            <span class="card-dias">🗓 10 dias / 9 noites</span>
+            <a href="#contato" class="btn-sm">Saiba mais</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WILDLIFE -->
+<section class="wildlife" id="vida-selvagem">
+  <div class="section-header">
+    <span class="section-eyebrow">Fauna pantaneira</span>
+    <h2 class="section-title" style="color:var(--creme)">Quem você vai<br><em>encontrar</em></h2>
+  </div>
+  <div class="wildlife-grid">
+    <div class="animal-card">
+      <span class="animal-emoji">🐆</span>
+      <div class="animal-name">Onça-pintada</div>
+      <div class="animal-sub">Panthera onca</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🦦</span>
+      <div class="animal-name">Ariranha</div>
+      <div class="animal-sub">Pteronura brasiliensis</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🦜</span>
+      <div class="animal-name">Arara-azul</div>
+      <div class="animal-sub">Anodorhynchus hyacinthinus</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🐊</span>
+      <div class="animal-name">Jacaré-do-pantanal</div>
+      <div class="animal-sub">Caiman crocodilus</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🐸</span>
+      <div class="animal-name">Tuiuiú</div>
+      <div class="animal-sub">Jabiru mycteria</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🦌</span>
+      <div class="animal-name">Cervo-do-pantanal</div>
+      <div class="animal-sub">Blastocerus dichotomus</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🐬</span>
+      <div class="animal-name">Boto-cor-de-rosa</div>
+      <div class="animal-sub">Inia geoffrensis</div>
+    </div>
+    <div class="animal-card">
+      <span class="animal-emoji">🦅</span>
+      <div class="animal-name">Gavião-real</div>
+      <div class="animal-sub">Harpia harpyja</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCIAS -->
+<section class="experiencia" id="experiencias">
+  <div class="section-header">
+    <span class="section-eyebrow">Como é estar lá</span>
+    <h2 class="section-title">Experiências que<br><em>transformam</em></h2>
+  </div>
+  <div class="exp-grid" style="max-width:1180px;margin:0 auto">
+    <div class="exp-big" style="background: linear-gradient(160deg, #2d5c45 0%, #0e1f18 100%)">
+      <div class="exp-overlay"></div>
+      <div class="exp-label">
+        <h3>Safári fluvial ao amanhecer</h3>
+        <p>Navegação silenciosa pelos rios com brumas da manhã</p>
+      </div>
+    </div>
+    <div class="exp-item" style="background: linear-gradient(160deg, #4a8c6a 0%, #1a3a2e 100%)">
+      <div class="exp-overlay"></div>
+      <div class="exp-label">
+        <h3>Trilhas com naturalistas</h3>
+        <p>Guias especializados em cada bioma</p>
+      </div>
+    </div>
+    <div class="exp-item" style="background: linear-gradient(160deg, #c8922a 0%, #4a3010 100%)">
+      <div class="exp-overlay"></div>
+      <div class="exp-label">
+        <h3>Noite estrelada no pântano</h3>
+        <p>Astroturismo sem poluição luminosa</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTEMUNHOS -->
+<section class="testemunhos" id="testemunhos">
+  <div class="section-header">
+    <span class="section-eyebrow">Quem já foi</span>
+    <h2 class="section-title">Palavras de quem<br><em>viveu</em> a experiência</h2>
+  </div>
+  <div class="depoimentos-grid">
+    <div class="depoimento">
+      <p class="depoimento-texto">"Ver uma onça-pintada a três metros de distância, no habitat natural dela, mudou completamente minha visão sobre a natureza. A equipe da Pantanal Selvagem criou o ambiente perfeito para isso."</p>
+      <div class="depoimento-autor">Renata Menezes</div>
+      <div class="depoimento-local">São Paulo · Expedição Trilha das Onças</div>
+    </div>
+    <div class="depoimento">
+      <p class="depoimento-texto">"Levei minha família pela primeira vez ao Pantanal. Os guias tornaram tudo acessível para as crianças sem perder a autenticidade. Foi o melhor investimento em memórias que já fiz."</p>
+      <div class="depoimento-autor">Pedro Lacerda</div>
+      <div class="depoimento-local">Rio de Janeiro · Primeiros Passos no Pantanal</div>
+    </div>
+    <div class="depoimento">
+      <p class="depoimento-texto">"Como fotógrafo profissional, fui cético no início. Mas os ângulos, a paciência dos guias e o conhecimento do ecossistema resultaram nas melhores imagens da minha carreira."</p>
+      <div class="depoimento-autor">Carlos Fujimoto</div>
+      <div class="depoimento-local">Curitiba · Expedição Fotográfica</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSERVAÇÃO -->
+<section style="background:var(--creme-escuro); padding: 6rem 3rem;" id="conservacao">
+  <div class="conservacao">
+    <div class="conservacao-text">
+      <div class="section-header">
+        <span class="section-eyebrow">Nossa missão</span>
+        <h2 class="section-title">Turismo que<br><em>protege</em></h2>
+      </div>
+      <p>O Pantanal enfrenta desmatamento, queimadas e pressão do agronegócio. Cada expedição que realizamos contribui diretamente para a conservação do ecossistema e para a renda das comunidades locais.</p>
+      <p>Trabalhamos com fazendas certificadas, exigimos impacto zero nos ecossistemas visitados e repassamos parte das receitas para projetos de reflorestamento e proteção de onças-pintadas.</p>
+      <a href="#contato" class="btn-primary" style="margin-top:1rem">Conhecer o projeto</a>
+    </div>
+    <div class="conservacao-nums">
+      <div class="cons-num">
+        <div class="num">12mil</div>
+        <div class="label">Hectares de habitat protegido em parceria</div>
+      </div>
+      <div class="cons-num">
+        <div class="num">R$380k</div>
+        <div class="label">Investidos em projetos de conservação</div>
+      </div>
+      <div class="cons-num">
+        <div class="num">47</div>
+        <div class="label">Famílias locais geração de renda</div>
+      </div>
+      <div class="cons-num">
+        <div class="num">0</div>
+        <div class="label">Pegada de carbono líquida (offsetting)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <h2>Partidas, histórias e avisos de fauna</h2>
+  <p>Receba em primeira mão novos pacotes, relatos de expedições e curiosidades do Pantanal.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="seu@email.com">
+    <button type="button">Inscrever</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contato">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo">Pantanal <span>Selvagem</span></span>
+      <p>Expedições de ecoturismo no Pantanal Mato-Grossense.<br>Baseados em Poconé — MT, a porta de entrada para o Pantanal Norte.</p>
+      <p style="margin-top:1rem; color: rgba(245,240,232,0.4); font-size:0.8rem">bento.host · Poconé, Mato Grosso</p>
+    </div>
+    <div class="footer-col">
+      <h4>Expedições</h4>
+      <a href="#pacotes">Trilha das Onças</a>
+      <a href="#pacotes">Passarinhada</a>
+      <a href="#pacotes">Expedição Fotográfica</a>
+      <a href="#pacotes">Grande Travessia</a>
+      <a href="#pacotes">Ver todos</a>
+    </div>
+    <div class="footer-col">
+      <h4>Empresa</h4>
+      <a href="#conservacao">Nossa Missão</a>
+      <a href="#testemunhos">Depoimentos</a>
+      <a href="#">Guias Naturalistas</a>
+      <a href="#">Parceiros</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <a href="tel:+556531234567">(65) 3123-4567</a>
+      <a href="https://wa.me/556599999999">WhatsApp</a>
+      <a href="mailto:contato@bento.host">contato@bento.host</a>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Pantanal Selvagem · bento.host</span>
+    <span>Poconé, MT — Porta de entrada para o Pantanal Norte</span>
+  </div>
+</footer>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+</script>
+
+</body>
+</html>
