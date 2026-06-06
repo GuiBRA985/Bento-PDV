@@ -19,47 +19,50 @@
   /* ── LOGIN ── */
   #tela-login {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+    background: var(--bg);
   }
   .login-box {
     background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAYGBgYHBgcICAcKCwoLCg8ODAwODxYQERAREBYiFRkVFRkVIh4kHhweJB42KiYmKjY+NDI0PkxERExfWl98fKcBBgYGBgcGBwgIBwoLCgsKDw4MDA[...]
     background-repeat: no-repeat;
-    background-size: 180% auto;
-    background-position: center center;
-    background-attachment: fixed;
+    background-size: 220% auto;
+    background-position: center 40%;
     border: 2px solid var(--accent);
     border-radius: 20px;
     padding: 50px 40px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 0 40px rgba(232, 160, 32, 0.2), 0 20px 60px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 40px rgba(232, 160, 32, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.98);
-  }
-  .login-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.85);
-    z-index: 0;
   }
   .login-box > * {
     position: relative;
     z-index: 1;
   }
   
-  /* Ajuste das fontes para fundo claro/branco */
+  /* Overlay semi-transparente apenas para os inputs ficarem mais legíveis */
+  .login-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.92);
+    z-index: 0;
+  }
+  
+  /* Ajuste das fontes para melhor visibilidade */
   .login-logo {
     color: #1a1a1a !important;
     text-shadow: none;
     font-weight: 900;
     font-size: 28px;
     letter-spacing: 2px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
   }
   .login-label {
     color: #2a2a2a !important;
@@ -68,6 +71,7 @@
     font-size: 13px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
+    margin-bottom: 8px;
   }
   .login-input {
     background: rgba(255, 255, 255, 1) !important;
@@ -75,6 +79,10 @@
     border: 2.5px solid #2a2a2a !important;
     font-weight: 600;
     font-size: 16px;
+    border-radius: 10px;
+    padding: 14px 16px;
+    width: 100%;
+    margin-bottom: 20px;
   }
   .login-input:focus {
     border-color: var(--accent) !important;
@@ -102,6 +110,12 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     transition: all 0.3s ease;
+    width: 100%;
+    padding: 15px 0;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 10px;
+    margin-top: 8px;
   }
   .login-btn:hover {
     filter: brightness(1.15);
@@ -109,20 +123,14 @@
     transform: translateY(-2px);
   }
   
-  .login-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--accent); margin-bottom: 40px; justify-content: center; }
-  .login-label { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
-  .login-input {
-    width: 100%; background: var(--bg); border: 1.5px solid var(--border);
-    border-radius: 10px; color: var(--text); padding: 14px 16px; font-size: 15px;
-    font-family: 'Syne', sans-serif; margin-bottom: 20px;
+  .login-erro { 
+    color: #f87171; 
+    font-size: 13px; 
+    text-align: center; 
+    margin-top: 16px; 
+    min-height: 18px; 
+    font-weight: 600; 
   }
-  .login-input:focus { border-color: var(--accent); }
-  .login-btn {
-    width: 100%; padding: 15px 0; background: var(--accent); color: var(--bg);
-    border-radius: 10px; font-size: 15px; font-weight: 800; letter-spacing: 1px; margin-top: 8px;
-  }
-  .login-btn:hover { filter: brightness(1.1); }
-  .login-erro { color: #f87171; font-size: 13px; text-align: center; margin-top: 16px; min-height: 18px; font-weight: 600; }
 
   /* ── APP ── */
   #app { display: none; }
@@ -237,6 +245,7 @@
 <!-- ══ TELA DE LOGIN ══ -->
 <div id="tela-login">
   <div class="login-box">
+    <div class="login-overlay"></div>
     <div class="login-logo">🍔 LANCHONETE PDV</div>
     <div class="login-label">USUÁRIO</div>
     <input class="login-input" id="login-user" type="text" placeholder="Digite seu usuário" autocomplete="username" />
