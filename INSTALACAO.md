@@ -29,3 +29,10 @@
 - `index.html` contém 10 produtos locais de exemplo. Se a API estiver inacessível ou vazia, mostra esses produtos, mas bloqueia pedidos e Pix.
 - `cardapio_demo.sql` cadastra os mesmos produtos no Supabase sem duplicar nomes. Execute no SQL Editor do projeto correto.
 - Se ainda aparecer erro após executar o SQL, confira se `https://bento-pdv.onrender.com/cardapio` responde com uma lista JSON e se o Render está online.
+
+## GPS e botão Cheguei
+- O aviso aparece ao solicitar GPS. O navegador pode suspender GPS em segundo plano.
+- O botão CHEGUEI só aparece após o backend retornar estado `pago`, `preparo` ou `pronto` para pedido GPS.
+- O botão registra `chegou_em` no Supabase. A Cozinha e o Garçom deverão exibir esse campo em seus painéis (a interface deles ainda não foi implementada neste pacote).
+- Não há como simular confirmação de Pix em produção: o pagamento Sicredi ainda exige integração real.
+- O botão é ocultado quando o pedido é entregue ou cancelado.

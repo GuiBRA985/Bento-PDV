@@ -13,3 +13,6 @@ create table if not exists public.publico_pedidos (
 );
 alter table public.publico_pedidos enable row level security;
 -- Nenhuma política pública: acesso apenas pelo backend com service role.
+
+-- Campo para confirmação manual de chegada (execução idempotente)
+alter table public.publico_pedidos add column if not exists chegou_em timestamptz;

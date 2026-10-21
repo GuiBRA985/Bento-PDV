@@ -3,10 +3,10 @@
 <header><strong>🍔 BENTO PDV</strong><a href="/login/">Acesso funcionários</a></header>
 <main><h1>Faça seu pedido</h1><p>Escolha seus produtos. Sem cadastro.</p>
 <div class="panel"><label><input type="radio" name="tipo" value="gps" checked> Estou a caminho (GPS)</label><br><label><input type="radio" name="tipo" value="estacionado"> Estou estacionado</label>
-<div id="gpsbox"><p>Compartilhe a localização durante a viagem para que a cozinha acompanhe sua chegada.</p><button id="gpsbtn" type="button">Ativar localização</button> <small id="gpsstatus">Localização desativada</small></div>
+<div id="gpsbox"><p id="gpsaviso" role="alert" class="hidden" style="background:#3a2c12;border:1px solid #e9a52b;border-radius:8px;padding:12px">Por favor. Não fechar o navegador para que o GPS não perca à referência.</p><p>Compartilhe a localização durante a viagem para que a cozinha acompanhe sua chegada.</p><button id="gpsbtn" type="button">Ativar localização</button> <small id="gpsstatus">Localização desativada</small></div>
 <div id="carbox" class="hidden"><p><input id="modelo" placeholder="Modelo do carro" maxlength="50"> <input id="cor" placeholder="Cor" maxlength="30"> <input id="placa" placeholder="Final da placa" maxlength="4"></p></div></div>
 <div id="produtos" class="panel">Carregando cardápio...</div>
-<div class="panel"><h2>Seu pedido</h2><div id="resumo">Carrinho vazio</div><p><input id="nome" placeholder="Nome ou apelido" maxlength="70"></p><button id="pedir">Gerar cobrança Pix</button><p id="msg" role="status"></p><div id="cobranca"></div></div></main>
+<div class="panel"><h2>Seu pedido</h2><div id="resumo">Carrinho vazio</div><p><input id="nome" placeholder="Nome ou apelido" maxlength="70"></p><button id="pedir">Gerar cobrança Pix</button><p id="msg" role="status"></p><div id="cobranca"></div><div id="chegada" class="hidden" style="margin-top:16px"><button id="chegueibtn" type="button">🚗 CHEGUEI</button><p id="chegueistatus" role="status"></p></div></div></main>
 <script>
 const API='https://bento-pdv.onrender.com';
 let catalogo=[],carrinho={},gps=null,watchId=null,pedido=null,access=null,demo=false;
@@ -15,7 +15,7 @@ const $=id=>document.getElementById(id), dinheiro=n=>Number(n).toLocaleString('p
 function tipo(){return document.querySelector('input[name=tipo]:checked').value}
 function atualizarTipo(){ $('gpsbox').classList.toggle('hidden',tipo()!=='gps');$('carbox').classList.toggle('hidden',tipo()!=='estacionado'); }
 document.querySelectorAll('[name=tipo]').forEach(x=>x.addEventListener('change',atualizarTipo));
-$('gpsbtn').onclick=()=>{if(!navigator.geolocation){$('gpsstatus').textContent='GPS indisponível';return}
+$('gpsbtn').onclick=()=>{$('gpsaviso').classList.remove('hidden');if(!navigator.geolocation){$('gpsstatus').textContent='GPS indisponível';return}
  watchId=navigator.geolocation.watchPosition(p=>{gps={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy};$('gpsstatus').textContent='Localização ativa';if(pedido&&access)fetch(API+'/publico/pedidos/'+pedido+'/gps',{method:'POST',headers:{'Content-Type':'application/json','X-Pedido-Token':access},body:JSON.stringify(gps)}).catch(()=>{})},e=>{$('gpsstatus').textContent='Sem localização: '+e.message},{enableHighAccuracy:true,maximumAge:15000,timeout:20000});};
 function desenhar(){
  $('produtos').innerHTML='';
@@ -33,8 +33,33 @@ $('pedir').onclick=async()=>{if(demo){$('msg').textContent='Cardápio demonstrat
 if(tipo()==='gps'&&!gps)return $('msg').textContent='Ative a localização GPS para pedido a caminho.';
 const veiculo={modelo:$('modelo').value.trim(),cor:$('cor').value.trim(),placa:$('placa').value.trim()};
 if(tipo()==='estacionado'&&(!veiculo.modelo||!veiculo.cor||!veiculo.placa))return $('msg').textContent='Informe modelo, cor e final da placa.';
-$('pedir').disabled=true;try{const data=await json(await fetch(API+'/publico/pedidos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:$('nome').value.trim(),tipo:tipo(),veiculo,gps,itens})}));pedido=data.id;access=data.token;
+$('pedir').disabled=true;try{const data=await json(await fetch(API+'/publico/pedidos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:$('nome').value.trim(),tipo:tipo(),veiculo,gps,itens})}));pedido=data.id;access=data.token;iniciarConsultaStatus();
 $('msg').textContent='Pedido registrado. Aguardando emissão de cobrança pelo Sicredi.';if(data.pixCopiaCola){$('cobranca').textContent='Pix Copia e Cola: '+data.pixCopiaCola}else{$('cobranca').textContent='Pagamento indisponível até ativação da API Pix Sicredi.'}
 }catch(e){$('msg').textContent=e.message}finally{$('pedir').disabled=false}};
+
+let statusTimer=null, statusAtual='aguardando_pix';
+async function consultarStatus(){
+ if(!pedido||!access)return;
+ try{
+  const data=await json(await fetch(API+'/publico/pedidos/'+encodeURIComponent(pedido)+'/status',{headers:{'X-Pedido-Token':access},cache:'no-store'}));
+  statusAtual=data.status;
+  const pago=['pago','preparo','pronto'].includes(data.status);
+  $('chegada').classList.toggle('hidden',!pago||data.tipo!=='gps'||!!data.chegou_em);
+  if(data.chegou_em)$('chegueistatus').textContent='Chegada registrada! Aguarde a entrega.';
+  if(data.status==='entregue'||data.status==='cancelado'){
+   $('chegada').classList.add('hidden');clearInterval(statusTimer);statusTimer=null;
+  }
+ }catch(e){console.warn('Consulta do pedido indisponível:',e.message)}
+}
+function iniciarConsultaStatus(){clearInterval(statusTimer);consultarStatus();statusTimer=setInterval(consultarStatus,10000)}
+$('chegueibtn').onclick=async()=>{
+ if(!pedido||!access)return;
+ $('chegueibtn').disabled=true;
+ try{
+  await json(await fetch(API+'/publico/pedidos/'+encodeURIComponent(pedido)+'/cheguei',{method:'POST',headers:{'X-Pedido-Token':access}}));
+  $('chegada').classList.add('hidden');$('chegueistatus').textContent='Chegada registrada! Aguarde a entrega.';
+ }catch(e){$('chegueistatus').textContent='Não foi possível avisar a equipe: '+e.message;$('chegueibtn').disabled=false}
+};
+
 fetch(API+'/cardapio').then(json).then(d=>{if(!Array.isArray(d)||!d.length)throw Error('Sem produtos cadastrados');catalogo=d;desenhar();resumo()}).catch(e=>{demo=true;catalogo=produtosDemo;desenhar();resumo();$('pedir').disabled=true;const aviso=document.createElement('p');aviso.style.color='#ffcf78';aviso.textContent='⚠️ Modo demonstração: o cardápio real não foi carregado ('+e.message+'). Pedidos e Pix desativados.';$('produtos').prepend(aviso)});
 </script></html>

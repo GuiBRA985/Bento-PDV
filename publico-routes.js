@@ -34,6 +34,24 @@ module.exports = function instalarRotasPublicas(app, supabase, auth) {
   if(error)return res.status(500).json({erro:'Falha GPS'});
   res.json({ok:!!data});
  });
+
+ function autorizado(req,res){const {id}=req.params,token=req.get('X-Pedido-Token')||'';
+  if(!/^[0-9a-f-]{36}$/i.test(id)||!validar(id,token)){res.status(403).json({erro:'Não autorizado'});return false}return true}
+ app.get('/publico/pedidos/:id/status',async(req,res)=>{
+  if(!autorizado(req,res))return;
+  const {data,error}=await supabase.from('publico_pedidos').select('status,tipo,chegou_em').eq('id',req.params.id).maybeSingle();
+  if(error)return res.status(500).json({erro:'Falha ao consultar pedido'});
+  if(!data)return res.status(404).json({erro:'Pedido não encontrado'});
+  res.set('Cache-Control','no-store').json(data);
+ });
+ app.post('/publico/pedidos/:id/cheguei',async(req,res)=>{
+  if(!autorizado(req,res))return;
+  const {data,error}=await supabase.from('publico_pedidos').update({chegou_em:new Date().toISOString()})
+   .eq('id',req.params.id).eq('tipo','gps').in('status',['pago','preparo','pronto']).is('chegou_em',null).select('id').maybeSingle();
+  if(error)return res.status(500).json({erro:'Não foi possível registrar chegada'});
+  if(!data)return res.status(409).json({erro:'Chegada já registrada ou pagamento ainda não confirmado'});
+  res.json({ok:true});
+ });
  app.get('/publico/equipe',auth,async(req,res)=>{
   if(!['admin','cozinha','garcom'].includes(req.usuario.perfil))return res.status(403).json({erro:'Sem permissão'});
   const {data,error}=await supabase.from('publico_pedidos').select('id,nome,tipo,veiculo,itens,status,lat,lng,gps_atualizado_em,criado_em').eq('status','pago').order('criado_em',{ascending:true});
