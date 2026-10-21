@@ -10,6 +10,19 @@ async function api(funcao,body){
  return data;
 }
 let catalogoPronto=false,ocupado=false;
+// Envia a localização somente enquanto houver um pedido GPS ativo.
+let ultimoEnvio=0,envioPendente=false;
+async function enviarGps(){
+ const atual=window.bentoPedidoTeste;
+ if(!atual||modo!=='gps'||!gps||envioPendente)return;
+ if(!Number.isFinite(gps.lat)||!Number.isFinite(gps.lng))return;
+ const agora=Date.now();if(agora-ultimoEnvio<10000)return;
+ ultimoEnvio=agora;envioPendente=true;
+ try{await api('pdv-pedidos',{action:'gps',id:atual.id,token:atual.token,gps:{lat:gps.lat,lng:gps.lng}})}
+ catch(e){console.warn('GPS: não foi possível atualizar',e)}
+ finally{envioPendente=false}
+}
+
 function aviso(msg){$('msg').textContent=msg}
 async function cardapio(){
  try{
@@ -64,6 +77,7 @@ function iniciar(){
    const d=await api('pdv-pedidos',{action:'criar_teste',nome,tipo:modo,veiculo,gps,itens,minutos:Number(select.value)});
    pedido=d.id;access=d.token;
    window.bentoPedidoTeste={id:d.id,token:d.token};
+   if(modo==='gps')enviarGps();
    carrinho={};resumo();
    aviso('🧪 Pedido #'+d.id+' confirmado como TESTE. Retirada em '+select.value+' minutos.');
    $('cobranca').textContent='Pagamento simulado com sucesso. Nenhum Pix foi cobrado.';
@@ -74,11 +88,14 @@ function iniciar(){
  $('chegueibtn').addEventListener('click',async ev=>{
   ev.preventDefault();ev.stopImmediatePropagation();
   if(!window.bentoPedidoTeste)return;
-  try{await api('pdv-pedidos',{action:'cheguei',...window.bentoPedidoTeste});$('chegada').classList.add('hidden');$('chegueistatus').textContent='Chegada registrada na cozinha.'}
+  try{await api('pdv-pedidos',{action:'cheguei',...window.bentoPedidoTeste});window.bentoPedidoTeste=null;$('chegada').classList.add('hidden');$('chegueistatus').textContent='Chegada registrada na cozinha.'}
   catch(e){$('chegueistatus').textContent=e.message}
  },true);
  // O script legado tenta buscar o Render em paralelo; aguardamos a falha
  // antes de aplicar definitivamente o catálogo real.
+ // O navegador mantém a posição atualizada pelo watchPosition da página.
+ // Enviamos a posição ao Supabase a cada 12 segundos enquanto a aba está aberta.
+ setInterval(enviarGps,12000);
  setTimeout(cardapio,1800);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar);else iniciar();

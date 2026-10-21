@@ -8,14 +8,35 @@ if(!token||!['admin','cozinha'].includes(perfil))location.replace('/login/');
 document.getElementById('sair').onclick=()=>{sessionStorage.clear();location.href='/login/'};
 async function api(action,extra={}){let r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({action,...extra})});let d=await r.json();if(!r.ok)throw Error(d.erro||'Erro');return d}
 let pedidos=[];
+// Centro aproximado do Plus Code G6JX+6V, Chapada dos Guimarães/MT.
+const LOJA={lat:-15.4694375,lng:-55.7503125};
+function distanciaKm(lat1,lon1,lat2,lon2){
+ const rad=x=>x*Math.PI/180,R=6371,dlat=rad(lat2-lat1),dlon=rad(lon2-lon1);
+ const a=Math.sin(dlat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dlon/2)**2;
+ return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function gpsTexto(p){
+ if(p.tipo_cliente!=='gps')return null;
+ const lat=Number(p.gps_lat),lng=Number(p.gps_lng);
+ if(p.gps_lat==null||p.gps_lng==null||!Number.isFinite(lat)||!Number.isFinite(lng))return '📍 Aguardando posição GPS do cliente';
+ const km=distanciaKm(lat,lng,LOJA.lat,LOJA.lng);
+ const idade=p.gps_atualizado_em?Date.now()-new Date(p.gps_atualizado_em).getTime():Infinity;
+ if(idade>90000)return '📍 Última distância: '+km.toFixed(2)+' km em linha reta — localização desatualizada';
+ // Sem serviço de rotas, ETA é aproximação a 30 km/h, sem trânsito ou ruas.
+ const eta=Math.max(1,Math.ceil(km/30*60));
+ return '📍 '+km.toFixed(2)+' km em linha reta · chegada estimada ~'+eta+' min (30 km/h)';
+}
+
 function draw(){let root=document.getElementById('lista');root.replaceChildren();let ativos=pedidos.filter(p=>['aberto','preparo'].includes(p.status));if(!ativos.length){root.textContent='Nenhum pedido pago aguardando na cozinha.';return}
 ativos.sort((a,b)=>new Date(a.prazo_retirada)-new Date(b.prazo_retirada));
 for(let p of ativos){let late=Date.now()>=new Date(p.prazo_retirada).getTime(),card=document.createElement('article');card.className='card'+(late?' late':'')+(p.cheguei_em?' arrived':'');
 function line(tag,s){let x=document.createElement(tag);x.textContent=s;card.append(x)}
 line('h2','Pedido #'+p.id+' — 🧪 TESTE');line('p',p.cliente+' · '+p.status);
 line('p',p.tipo_cliente==='estacionado'?'🚙 '+[p.veiculo_modelo,p.veiculo_cor,p.veiculo_placa].filter(Boolean).join(' · '):'📍 GPS');
+if(p.tipo_cliente==='gps')line('p',gpsTexto(p));
 if(p.cheguei_em)line('strong','🟢 CLIENTE CHEGOU');
 let t=Math.floor((new Date(p.prazo_retirada).getTime()-Date.now())/1000),v=Math.abs(t);
+line('small','⏳ Prazo de retirada escolhido pelo cliente:');
 line('h1',(t<0?'−':'')+String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0'));
 let ul=document.createElement('ul');for(let i of p.itens_pedido||[]){let li=document.createElement('li');li.textContent=i.qty+' × '+i.nome_snap;ul.append(li)}card.append(ul);
 for(let [status,label] of [['preparo','Em preparação'],['pronto','Pronto → Garçom'],['entregue','Entregue']]){let b=document.createElement('button');b.textContent=label;b.disabled=status==='preparo'&&p.status==='preparo';b.onclick=async()=>{if(status==='entregue'&&!confirm('Confirmar entrega?'))return;try{await api('alterar_status',{id:p.id,status});await load()}catch(e){document.getElementById('erro').textContent=e.message}};card.append(b)}root.append(card)}}

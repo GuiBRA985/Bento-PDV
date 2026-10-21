@@ -1,0 +1,14 @@
+BENTO PDV — GPS DEMONSTRAÇÃO
+
+Envie os dois arquivos para a RAIZ do repositório GuiBRA985/Bento-PDV, substituindo os arquivos de mesmo nome.
+
+1. bento-integracao.js: envia GPS do cliente para Supabase a cada 12 segundos enquanto a página estiver aberta.
+2. cozinha.html: exibe distância em linha reta e estimativa aproximada de chegada, além do contador de retirada.
+
+Referência: Plus Code G6JX+6V Chapada dos Guimarães, centro aproximado -15.4694375, -55.7503125.
+
+A estimativa usa velocidade fixa de 30 km/h, não considera rotas, ruas, trânsito nem velocidade real do cliente. Não é um ETA de navegação.
+
+É preciso conceder permissão de GPS e manter a página aberta. Atualização da Cozinha a cada 10 segundos.
+
+Não altere index.html. Não há mudança no banco nem na Edge Function.
