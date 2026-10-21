@@ -1,0 +1,26 @@
+# Bento PDV — pacote inicial da nova experiência pública
+
+## Arquivos
+- `index.html`: novo cardápio público com dois modos (GPS e estacionado).
+- `login/index.html`: entrada da equipe, redireciona para `/painel.html`.
+- `publico-routes.js`: API de pedidos anônimos, cálculo de preço no servidor e atualização GPS.
+- `supabase.sql`: tabela isolada para pedidos públicos.
+
+## Instalação no repositório
+1. **Faça backup** do `index.html` atual, renomeando-o para `painel.html` (preserva login e painel atuais).
+2. Coloque os arquivos deste pacote no repositório, mantendo `login/index.html` dentro da pasta `login`.
+3. No Supabase, execute `supabase.sql` no SQL Editor.
+4. No Render, configure `PUBLIC_ORDER_SECRET` com uma string aleatória longa e segura (não publique no GitHub).
+5. Em `server.js`, logo depois de `function auth(...)` (após o fechamento da função), adicione:
+   `require('./publico-routes')(app, supabase, auth);`
+6. Faça o deploy do frontend no GitHub Pages e do backend no Render.
+
+## Limitações importantes
+- **Pix Sicredi NÃO está integrado**. Não existe geração de cobrança real nem confirmação automática até obtenção das credenciais e implementação segura de OAuth2/mTLS e webhooks validados.
+- Por segurança, pedidos públicos ficam em `aguardando_pix`; não são liberados para a cozinha.
+- O painel atual (`painel.html`) ainda não mostra a nova tabela `publico_pedidos`. A rota protegida `/publico/equipe` está pronta para a próxima etapa.
+- Distância e tempo de chegada exigem coordenadas da lanchonete e serviço de rotas; não estão calculados neste pacote.
+- A localização só atualiza enquanto o navegador permitir e a página estiver ativa.
+- Para produção, adicionar proteção contra abuso/rate limiting, validação mais estrita e gestão de privacidade/retenção do GPS.
+- A rota `/login/` exige que o hosting sirva diretórios com `index.html` (GitHub Pages suporta).
+- Teste primeiro em branch ou ambiente de homologação.
