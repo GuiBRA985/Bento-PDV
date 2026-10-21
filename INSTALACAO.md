@@ -24,3 +24,8 @@
 - Para produção, adicionar proteção contra abuso/rate limiting, validação mais estrita e gestão de privacidade/retenção do GPS.
 - A rota `/login/` exige que o hosting sirva diretórios com `index.html` (GitHub Pages suporta).
 - Teste primeiro em branch ou ambiente de homologação.
+
+## Cardápio de demonstração
+- `index.html` contém 10 produtos locais de exemplo. Se a API estiver inacessível ou vazia, mostra esses produtos, mas bloqueia pedidos e Pix.
+- `cardapio_demo.sql` cadastra os mesmos produtos no Supabase sem duplicar nomes. Execute no SQL Editor do projeto correto.
+- Se ainda aparecer erro após executar o SQL, confira se `https://bento-pdv.onrender.com/cardapio` responde com uma lista JSON e se o Render está online.

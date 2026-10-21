@@ -9,7 +9,8 @@
 <div class="panel"><h2>Seu pedido</h2><div id="resumo">Carrinho vazio</div><p><input id="nome" placeholder="Nome ou apelido" maxlength="70"></p><button id="pedir">Gerar cobrança Pix</button><p id="msg" role="status"></p><div id="cobranca"></div></div></main>
 <script>
 const API='https://bento-pdv.onrender.com';
-let catalogo=[],carrinho={},gps=null,watchId=null,pedido=null,access=null;
+let catalogo=[],carrinho={},gps=null,watchId=null,pedido=null,access=null,demo=false;
+const produtosDemo=[{id:'demo-1',nome:'X-Burger',preco:18.9},{id:'demo-2',nome:'X-Salada',preco:22.9},{id:'demo-3',nome:'X-Bacon',preco:27.9},{id:'demo-4',nome:'X-Tudo',preco:32.9},{id:'demo-5',nome:'Combo X-Burger + Refrigerante Lata',preco:24.9},{id:'demo-6',nome:'Combo X-Bacon + Refrigerante Lata',preco:33.9},{id:'demo-7',nome:'Combo Duplo + Refrigerante Lata',preco:39.9},{id:'demo-8',nome:'Refrigerante Cola Lata 350 ml',preco:7},{id:'demo-9',nome:'Refrigerante Guaraná Lata 350 ml',preco:7},{id:'demo-10',nome:'Refrigerante Laranja Lata 350 ml',preco:7}];
 const $=id=>document.getElementById(id), dinheiro=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function tipo(){return document.querySelector('input[name=tipo]:checked').value}
 function atualizarTipo(){ $('gpsbox').classList.toggle('hidden',tipo()!=='gps');$('carbox').classList.toggle('hidden',tipo()!=='estacionado'); }
@@ -19,12 +20,12 @@ $('gpsbtn').onclick=()=>{if(!navigator.geolocation){$('gpsstatus').textContent='
 function desenhar(){ $('produtos').innerHTML='';catalogo.forEach(i=>{const d=document.createElement('div');d.className='item';const txt=document.createElement('span');txt.textContent=i.nome+' — '+dinheiro(i.preco);const b=document.createElement('button');b.textContent='Adicionar';b.onclick=()=>{carrinho[i.id]=(carrinho[i.id]||0)+1;resumo()};d.append(txt,b);$('produtos').append(d)});}
 function resumo(){ $('resumo').innerHTML='';let total=0;catalogo.forEach(i=>{let q=carrinho[i.id]||0;if(!q)return;total+=q*Number(i.preco);const d=document.createElement('p');d.textContent=q+' × '+i.nome+' — '+dinheiro(q*i.preco)+' ';const b=document.createElement('button');b.textContent='−';b.onclick=()=>{carrinho[i.id]--;resumo()};d.append(b);$('resumo').append(d)});const t=document.createElement('strong');t.textContent='Total: '+dinheiro(total);$('resumo').append(t);}
 async function json(r){const x=await r.json().catch(()=>({}));if(!r.ok)throw Error(x.erro||'Erro '+r.status);return x}
-$('pedir').onclick=async()=>{const itens=Object.entries(carrinho).filter(([,q])=>q>0).map(([id,qty])=>({id,qty}));if(!itens.length)return $('msg').textContent='Escolha ao menos um produto.';
+$('pedir').onclick=async()=>{if(demo){$('msg').textContent='Cardápio demonstrativo: pedidos e Pix desativados até a API voltar.';return;}const itens=Object.entries(carrinho).filter(([,q])=>q>0).map(([id,qty])=>({id,qty}));if(!itens.length)return $('msg').textContent='Escolha ao menos um produto.';
 if(tipo()==='gps'&&!gps)return $('msg').textContent='Ative a localização GPS para pedido a caminho.';
 const veiculo={modelo:$('modelo').value.trim(),cor:$('cor').value.trim(),placa:$('placa').value.trim()};
 if(tipo()==='estacionado'&&(!veiculo.modelo||!veiculo.cor||!veiculo.placa))return $('msg').textContent='Informe modelo, cor e final da placa.';
 $('pedir').disabled=true;try{const data=await json(await fetch(API+'/publico/pedidos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:$('nome').value.trim(),tipo:tipo(),veiculo,gps,itens})}));pedido=data.id;access=data.token;
 $('msg').textContent='Pedido registrado. Aguardando emissão de cobrança pelo Sicredi.';if(data.pixCopiaCola){$('cobranca').textContent='Pix Copia e Cola: '+data.pixCopiaCola}else{$('cobranca').textContent='Pagamento indisponível até ativação da API Pix Sicredi.'}
 }catch(e){$('msg').textContent=e.message}finally{$('pedir').disabled=false}};
-fetch(API+'/cardapio').then(json).then(d=>{catalogo=d;desenhar();resumo()}).catch(e=>$('produtos').textContent='Cardápio indisponível: '+e.message);
+fetch(API+'/cardapio').then(json).then(d=>{if(!Array.isArray(d)||!d.length)throw Error('Sem produtos cadastrados');catalogo=d;desenhar();resumo()}).catch(e=>{demo=true;catalogo=produtosDemo;desenhar();resumo();$('pedir').disabled=true;const aviso=document.createElement('p');aviso.style.color='#ffcf78';aviso.textContent='⚠️ Modo demonstração: o cardápio real não foi carregado ('+e.message+'). Pedidos e Pix desativados.';$('produtos').prepend(aviso)});
 </script></html>
