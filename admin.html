@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bento PDV | Administrador</title>
+<style>
+:root{font-family:system-ui,Arial;color:#faf5ea;background:#111}*{box-sizing:border-box}body{margin:0}
+header,main{max-width:1050px;margin:auto;padding:20px}header{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #444}
+h1{color:#ffc15a;font-size:25px}h2{font-size:20px}.panel{background:#222;border:1px solid #444;border-radius:14px;padding:20px;margin:16px 0}
+label{display:block;margin:10px 0}input,select,textarea{width:100%;padding:12px;background:#171717;border:1px solid #666;color:white;border-radius:9px;font:inherit}
+button{background:#ffc15a;color:#111;border:0;border-radius:9px;padding:12px 18px;font-weight:700;cursor:pointer}
+button.secondary{background:#444;color:white}button:disabled{opacity:.5}.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+.item{border-bottom:1px solid #444;padding:14px 0;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+small,.muted{color:#aaa}.hidden{display:none!important}.error{color:#ff8b8b}.ok{color:#8ee5a8}
+</style></head><body>
+<header><strong>🍔 BENTO PDV — ADMIN</strong><div><a href="/" style="color:#ffc15a">Faça seu pedido</a> <button id="sair" class="secondary hidden">Sair</button></div></header>
+<main><section id="login" class="panel"><h1>Acesso administrador</h1><label>Usuário<input id="usuario" autocomplete="username" value="admin"></label>
+<label>Senha<input id="senha" type="password" autocomplete="current-password"></label><button id="entrar">Entrar</button><p id="erroLogin" class="error" role="alert"></p></section>
+<section id="painel" class="hidden"><h1>Gerenciar cardápio</h1><p>Cadastre produtos, altere preços e ative ou desative itens.</p>
+<div class="panel"><h2 id="formTitulo">Novo produto</h2><form id="form">
+<input type="hidden" id="id"><div class="row"><label>Nome<input id="nome" required maxlength="120"></label>
+<label>Categoria<select id="categoria"><option>Lanches</option><option>Combos</option><option>Bebidas</option></select></label></div>
+<div class="row"><label>Preço (R$)<input id="preco" type="number" min="0" step="0.01" required></label>
+<label>Descrição<input id="descricao" maxlength="500"></label></div>
+<label><input id="ativo" type="checkbox" checked style="width:auto"> Produto disponível no cardápio</label>
+<div class="row"><button type="submit">Salvar produto</button><button type="button" class="secondary" id="limpar">Cancelar edição</button></div>
+</form><p id="mensagem" role="status"></p></div>
+<div class="panel"><h2>Produtos cadastrados</h2><div id="lista">Carregando...</div></div></section></main>
+<script>
+const URL_API='https://cyrugoukyhitaiamwgzu.supabase.co/functions/v1/pdv-admin';
+const $=id=>document.getElementById(id);let token=sessionStorage.getItem('bento_admin_token')||'';let itens=[];
+async function api(action,extra={}){const r=await fetch(URL_API,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify({action,...extra})});const d=await r.json();if(!r.ok)throw Error(d.erro||'Erro de conexão');return d}
+function mostrar(){const ok=!!token;$('login').classList.toggle('hidden',ok);$('painel').classList.toggle('hidden',!ok);$('sair').classList.toggle('hidden',!ok);if(ok)carregar()}
+$('entrar').onclick=async()=>{try{$('erroLogin').textContent='';const d=await api('login',{usuario:$('usuario').value.trim(),senha:$('senha').value});if(d.perfil!=='admin')throw Error('Acesso exclusivo do administrador');token=d.token;sessionStorage.setItem('bento_admin_token',token);$('senha').value='';mostrar()}catch(e){$('erroLogin').textContent=e.message}};
+$('senha').onkeydown=e=>{if(e.key==='Enter')$('entrar').click()};
+$('sair').onclick=()=>{token='';sessionStorage.removeItem('bento_admin_token');mostrar()};
+function limpar(){$('form').reset();$('id').value='';$('ativo').checked=true;$('formTitulo').textContent='Novo produto'}
+$('limpar').onclick=limpar;
+async function carregar(){try{const d=await api('cardapio_admin');itens=d.items||[];const lista=$('lista');lista.replaceChildren();if(!itens.length){lista.textContent='Nenhum produto cadastrado.';return}
+for(const p of itens){const div=document.createElement('div');div.className='item';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=p.nome;const small=document.createElement('small');small.textContent=' '+p.categoria+' — '+Number(p.preco).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})+(p.ativo?' — Disponível':' — Indisponível');info.append(strong,document.createElement('br'),small);const b=document.createElement('button');b.textContent='Editar';b.onclick=()=>{for(const campo of ['id','nome','categoria','preco','descricao'])$(campo).value=p[campo]??'';$('ativo').checked=!!p.ativo;$('formTitulo').textContent='Editar produto';window.scrollTo({top:0,behavior:'smooth'})};div.append(info,b);lista.append(div)}}catch(e){$('lista').textContent=e.message;if(e.message.includes('login'))$('sair').click()}}
+$('form').onsubmit=async e=>{e.preventDefault();const produto={id:$('id').value||null,nome:$('nome').value,categoria:$('categoria').value,preco:Number($('preco').value),descricao:$('descricao').value,ativo:$('ativo').checked};try{$('mensagem').textContent='Salvando...';await api('salvar_produto',{produto});$('mensagem').className='ok';$('mensagem').textContent='Produto salvo com sucesso.';limpar();await carregar()}catch(err){$('mensagem').className='error';$('mensagem').textContent=err.message}};
+mostrar();
+</script></body></html>
