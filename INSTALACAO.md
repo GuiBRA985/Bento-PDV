@@ -39,3 +39,10 @@
 
 ## Menu expansível
 As categorias Lanches, Combos e Bebidas agora funcionam como acordeão: somente uma aberta por vez; clicar novamente fecha. A alteração é apenas no `index.html`.
+
+## Nova tela de escolha (GPS / Estacionado)
+- Dois botões grandes; GPS solicita permissão e abre cardápio somente após obter posição.
+- Estacionado mostra carro, cor e final da placa; o botão Ver cardápio valida os campos.
+- O carrinho é salvo em localStorage antes de pagar e só é apagado quando a API reporta status pago/preparo/pronto/entregue.
+- ATENÇÃO: o backend deste pacote ainda grava uma intenção `aguardando_pix` na tabela `publico_pedidos` antes do pagamento. Para a exigência de nenhuma persistência antes da confirmação, é preciso refatorar o backend e criar armazenamento temporário da cobrança no provedor Pix. O pacote não afirma cumprir essa exigência.
+- O pagamento real Sicredi segue pendente.
