@@ -1,0 +1,13 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bento PDV | Funcionários</title>
+<style>:root{font-family:system-ui;background:#111;color:#fff}*{box-sizing:border-box}body{margin:0}main{max-width:440px;margin:9vh auto;padding:25px;background:#222;border-radius:18px}h1{color:#ffc15a}label{display:block;margin:15px 0}input{display:block;width:100%;padding:14px;margin-top:7px;background:#111;color:#fff;border:1px solid #666;border-radius:9px;font:inherit}button{padding:13px 22px;background:#ffc15a;border:0;border-radius:9px;font-weight:bold;cursor:pointer}a{color:#ffc15a}#erro{color:#ff9a9a}</style></head><body>
+<main><h1>🍔 Acesso funcionário</h1><p>Entre com seu usuário e senha para abrir seu departamento.</p><form id="form"><label>Usuário<input id="usuario" autocomplete="username" required></label><label>Senha<input id="senha" type="password" autocomplete="current-password" required></label><button>Entrar</button></form><p id="erro" role="alert"></p><p><a href="/">← Faça seu pedido</a></p></main>
+<script>
+const api='https://cyrugoukyhitaiamwgzu.supabase.co/functions/v1/pdv-admin';
+document.getElementById('form').onsubmit=async e=>{e.preventDefault();const erro=document.getElementById('erro');erro.textContent='Entrando...';try{
+const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',usuario:document.getElementById('usuario').value.trim(),senha:document.getElementById('senha').value})});
+const d=await r.json();if(!r.ok)throw Error(d.erro||'Erro no login');
+sessionStorage.setItem('bento_funcionario_token',d.token);sessionStorage.setItem('bento_funcionario_perfil',d.perfil);
+if(d.perfil==='admin')sessionStorage.setItem('bento_admin_token',d.token);
+location.href=({admin:'/admin.html',cozinha:'/cozinha.html',garcom:'/garcom.html',caixa:'/caixa.html'})[d.perfil]||'/';
+}catch(err){erro.textContent=err.message}};
+</script></body></html>
