@@ -83,4 +83,6 @@ $('chegueibtn').onclick=async()=>{
 };
 
 fetch(API+'/cardapio').then(json).then(d=>{if(!Array.isArray(d)||!d.length)throw Error('Sem produtos cadastrados');catalogo=d;desenhar();resumo()}).catch(e=>{demo=true;catalogo=produtosDemo;desenhar();resumo();$('pedir').disabled=true;const aviso=document.createElement('p');aviso.style.color='#ffcf78';aviso.textContent='⚠️ Modo demonstração: o cardápio real não foi carregado ('+e.message+'). Pedidos e Pix desativados.';$('produtos').prepend(aviso)});
-</script></html>
+</script>
+<script src="/bento-integracao.js"></script>
+</html>
