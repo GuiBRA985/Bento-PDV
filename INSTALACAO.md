@@ -36,3 +36,6 @@
 - O botão registra `chegou_em` no Supabase. A Cozinha e o Garçom deverão exibir esse campo em seus painéis (a interface deles ainda não foi implementada neste pacote).
 - Não há como simular confirmação de Pix em produção: o pagamento Sicredi ainda exige integração real.
 - O botão é ocultado quando o pedido é entregue ou cancelado.
+
+## Menu expansível
+As categorias Lanches, Combos e Bebidas agora funcionam como acordeão: somente uma aberta por vez; clicar novamente fecha. A alteração é apenas no `index.html`.

@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bento PDV — Cardápio</title>
-<style>body{margin:0;background:#111;color:#faf5ea;font:16px system-ui}header,main{max-width:850px;margin:auto;padding:20px}header{display:flex;justify-content:space-between;align-items:center}a{color:#ffc15a}h1{color:#ffc15a}button,input,select{font:inherit;padding:12px;border-radius:8px;border:1px solid #555}button{background:#e9a52b;color:#111;font-weight:bold;cursor:pointer}button:disabled{opacity:.5}input,select{background:#252525;color:white;max-width:100%}.categoria-titulo{color:#ffc15a;margin:26px 0 8px;border-bottom:1px solid #555;padding-bottom:8px}.item{padding:15px;border-bottom:1px solid #444;display:flex;justify-content:space-between;gap:10px}.panel{background:#222;border-radius:12px;padding:18px;margin:20px 0}.hidden{display:none}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}small{color:#bbb}#msg{white-space:pre-wrap;color:#ffcf78}</style>
+<style>body{margin:0;background:#111;color:#faf5ea;font:16px system-ui}header,main{max-width:850px;margin:auto;padding:20px}header{display:flex;justify-content:space-between;align-items:center}a{color:#ffc15a}h1{color:#ffc15a}button,input,select{font:inherit;padding:12px;border-radius:8px;border:1px solid #555}button{background:#e9a52b;color:#111;font-weight:bold;cursor:pointer}button:disabled{opacity:.5}input,select{background:#252525;color:white;max-width:100%}.categoria-titulo{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;color:#ffc15a;margin:10px 0;border:1px solid #555;background:#303030;padding:16px;border-radius:10px}.categoria-titulo:hover,.categoria-titulo[aria-expanded="true"]{background:#40351f}.categoria-conteudo{padding:0 4px 12px}.categoria-conteudo[hidden]{display:none}.item{padding:15px;border-bottom:1px solid #444;display:flex;justify-content:space-between;gap:10px}.panel{background:#222;border-radius:12px;padding:18px;margin:20px 0}.hidden{display:none}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}small{color:#bbb}#msg{white-space:pre-wrap;color:#ffcf78}</style>
 <header><strong>🍔 BENTO PDV</strong><a href="/login/">Acesso funcionários</a></header>
 <main><h1>Faça seu pedido</h1><p>Escolha seus produtos. Sem cadastro.</p>
 <div class="panel"><label><input type="radio" name="tipo" value="gps" checked> Estou a caminho (GPS)</label><br><label><input type="radio" name="tipo" value="estacionado"> Estou estacionado</label>
@@ -22,8 +22,18 @@ function desenhar(){
  for(const categoria of ['Lanches','Combos','Bebidas']){
   const itens=catalogo.filter(i=>String(i.categoria||'').toLowerCase()===categoria.toLowerCase());
   if(!itens.length)continue;
-  const h=document.createElement('h2');h.className='categoria-titulo';h.textContent=({Lanches:'🍔 Lanches',Combos:'🍟 Combos',Bebidas:'🥤 Bebidas'})[categoria];$('produtos').append(h);
-  itens.forEach(i=>{const d=document.createElement('div');d.className='item';const txt=document.createElement('span');txt.textContent=i.nome+' — '+dinheiro(i.preco);const b=document.createElement('button');b.textContent='Adicionar';b.onclick=()=>{carrinho[i.id]=(carrinho[i.id]||0)+1;resumo()};d.append(txt,b);$('produtos').append(d)});
+  const botao=document.createElement('button');botao.type='button';botao.className='categoria-titulo';botao.setAttribute('aria-expanded','false');
+  const titulo=document.createElement('span');titulo.textContent=({Lanches:'🍔 Lanches',Combos:'🍟 Combos',Bebidas:'🥤 Bebidas'})[categoria];
+  const seta=document.createElement('span');seta.textContent='＋';seta.setAttribute('aria-hidden','true');botao.append(titulo,seta);
+  const conteudo=document.createElement('div');conteudo.className='categoria-conteudo';conteudo.hidden=true;
+  botao.onclick=()=>{
+   const abrir=conteudo.hidden;
+   document.querySelectorAll('.categoria-conteudo').forEach(el=>el.hidden=true);
+   document.querySelectorAll('.categoria-titulo').forEach(el=>{el.setAttribute('aria-expanded','false');el.lastElementChild.textContent='＋'});
+   if(abrir){conteudo.hidden=false;botao.setAttribute('aria-expanded','true');seta.textContent='−'}
+  };
+  itens.forEach(i=>{const d=document.createElement('div');d.className='item';const txt=document.createElement('span');txt.textContent=i.nome+' — '+dinheiro(i.preco);const b=document.createElement('button');b.textContent='Adicionar';b.onclick=()=>{carrinho[i.id]=(carrinho[i.id]||0)+1;resumo()};d.append(txt,b);conteudo.append(d)});
+  $('produtos').append(botao,conteudo);
  }
  if(!$('produtos').children.length)$('produtos').textContent='Nenhum produto disponível nas categorias Lanches, Combos e Bebidas.';
 }
